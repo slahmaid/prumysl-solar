@@ -311,32 +311,40 @@
         </div>
     </footer>
 
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx8c-jgtDu0f9DkPCv9NdSwow2FLMLg-NnTT4A1gIvyIbjdYsxVa2EP2rWgmzy_Z0E/exec';
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', e => {
-                e.preventDefault();
-                const btn = form.querySelector('button[type="submit"]');
-                const originalText = btn.innerText;
-                btn.innerText = "جاري الإرسال...";
-                btn.disabled = true;
-                let requestBody = new FormData(form);
-                fetch(scriptURL, { method: 'POST', body: requestBody })
-                    .then(response => {
-                        alert("تم استلام طلبك بنجاح! سيتصل بك فريقنا قريباً.");
-                        form.reset();
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                    })
-                    .catch(error => {
-                        alert("حدث خطأ! المرجو المحاولة مرة أخرى أو الاتصال بنا.");
-                        console.error('Error!', error.message);
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                    });
-            });
+<script>
+    // 1. YOUR GOOGLE SCRIPT URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx8c-jgtDu0f9DkPCv9NdSwow2FLMLg-NnTT4A1gIvyIbjdYsxVa2EP2rWgmzy_Z0E/exec';
+    
+    const forms = document.querySelectorAll('form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "جاري الإرسال...";
+            btn.disabled = true;
+
+            let requestBody = new FormData(form);
+
+            // Get data for the redirect URL
+            let productName = requestBody.get('product_name') || "منتج Prumysl";
+            let customerName = requestBody.get('fullname');
+
+            fetch(scriptURL, { method: 'POST', body: requestBody })
+                .then(response => {
+                    // REDIRECT TO THANK YOU PAGE WITH DATA
+                    window.location.href = `thank-you.html?product=${encodeURIComponent(productName)}&name=${encodeURIComponent(customerName)}`;
+                })
+                .catch(error => {
+                    alert("حدث خطأ! المرجو المحاولة مرة أخرى أو الاتصال بنا.");
+                    console.error('Error!', error.message);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
         });
-    </script>
+    });
+</script>
 </body>
 </html>
